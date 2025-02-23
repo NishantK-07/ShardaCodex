@@ -11,25 +11,46 @@ import {
   import { Button } from "@/components/ui/button";
   import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CheckCircle2, Eye, EyeOff, LogOut } from "lucide-react"
 import Link from "next/link"
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { CheckCircle2, Eye, EyeOff, LogOut } from "lucide-react"
 function login() {
+  const router = useRouter();
   const [email, setemail] = useState("");
   const [password, setpassword] = useState("");
-//   const [error, setError] = useState("");
-const [showPassword,setshowPassword]=useState("")
-//   const handleSubmit = (e) => {
-//     e.preventDefault();
-    
-//     if (!email || !password) {
-//       setError("Please fill in all fields.");
-//       return;
-//     }
+  const [showPassword,setshowPassword]=useState("")
+  const[loading,setLoading]=useState(false)
 
-//     setError("");
-//     // Add your login logic here
-//     console.log("Logging in with: ", email, password);
-//   };
+  const onSubmit = async () => {
+    setLoading(true);
+    try {
+      if (email.length === 0 || password.length === 0) {
+        // toast({ title: "Please fill all fields" });
+        // toast("Please fill all fields");
+        console.log("Please fill all fields")
+      }
+      const res = await axios.post(`http://localhost:3010/api/auth/login`, {
+        email: email,
+        password: password,
+      });
+      if (res.data.status === "success") {
+        // dispatch(userLoggedInDetails(res.data));
+        // setTimeout(() => {
+          router.push("/"); // Redirect after showing the toast
+        // }, 1500);
+      }
+    } catch (err) {
+      console.log("err: ", err);
+      // toast.error("Invalid credentials");
+      // toast({ title: "Invalid credentials", variant: 'destructive' });
+      console.log("Invalid credentials")
+    } finally {
+      setLoading(false);
+    }
+
+  };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
@@ -58,7 +79,7 @@ const [showPassword,setshowPassword]=useState("")
             </div>
           </div>
 
-          <Button type="submit" className="w-full   text-white">
+          <Button type="submit" onClick={onSubmit} className="w-full   text-white">
             Sign In
           </Button>
         </CardContent>

@@ -13,47 +13,50 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
-
-
+import { useRouter } from "next/navigation";
+import axios from "axios";
 function signup() {
   // const { toast } = useToast()
+  const router = useRouter();
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-
-//   const onSubmit = async (e) => {
-//     e.preventDefault();
-//     setLoading(true);
+  const[loading,setLoading]=useState(false)
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
     
 
-//     try {
-//       const res = await axios.post('http://localhost:3010/api/auth/signup', {
-//         name: name,
-//         email: email,
-//         password: password,
-//         confirmPassword: confirmPassword,
-//       });
-//       if (res.data.status === "success") {
-//         dispatch(userLoggedInDetails(res.data.user));
-//         router.push("/login");
-//       }
-//       if (res.data) {
-//         toast({
-//           title: "Account Created!",
-//         });
-//       }
-//     } catch (err) {
-//       console.log("err: ", err);
-//       toast({
-//         title: err.response?.data?.message || "Something went wrong",
-//         variant: "destructive",
-//       });
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
+    try {
+      const res = await axios.post('http://localhost:3010/api/auth/signup', {
+        name: name,
+        email: email,
+        password: password,
+        confirmPassword: confirmPassword,
+      });
+      if (res.data.status === "success") {
+        // dispatch(userLoggedInDetails(res.data.user));
+        router.push("/login");
+      }
+      if (res.data) {
+        // toast({
+        //   title: "Account Created!",
+        // });
+        console.log("suces")
+      }
+    } catch (err) {
+      console.log("err: ", err);
+      // toast({
+      //   title: err.response?.data?.message || "Something went wrong",
+      //   variant: "destructive",
+      // });
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div className="h-screen flex items-center justify-center bg-gray-50 p-4">
       <Card className="mx-auto w-full max-w-sm">
@@ -104,7 +107,7 @@ function signup() {
                 onChange={(e) => setConfirmPassword(e.target.value)} className="bg-[#f8f9fa]"
               />
             </div>
-            <Button className="w-full">
+            <Button onClick={onSubmit} className="w-full">
               Create an account
               {/* {loading && (
                 <LucideLoader2 className="animate-spin ml-2 w-4 h-4" />

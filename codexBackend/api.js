@@ -1,9 +1,18 @@
 const express = require("express")
 const app=express();
 const mongoose =require("mongoose");
+const cors = require('cors');
 
 
-
+const corsConfig = {
+    origin: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE','PATCH'], // Allowed methods
+    allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
+    credentials: true,
+  };
+  app.use(cors(corsConfig));
+  app.options("*", cors(corsConfig));
+  
 const dotenv=require("dotenv")
 dotenv.config();
 // const dblink=`mongodb+srv://admin:${process.env.DB_PASSWORD}@cluster0.xznlp.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;

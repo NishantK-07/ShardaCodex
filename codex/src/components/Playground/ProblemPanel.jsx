@@ -8,7 +8,7 @@ function ProblemPanel() {
   return (
 
         <div className='h-screen'>
-            <Split className="split-panel h-full" sizes={[55,45]} minSize={60}>
+            <Split className="split-panel h-full" sizes={[45,55]} minSize={60}>
               <ProblemDesc/>
               <Playground/>
             </Split>
