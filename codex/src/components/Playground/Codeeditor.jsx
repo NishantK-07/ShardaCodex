@@ -27,7 +27,7 @@ function Codeeditor({problemId}) {
   // to change language
   const handleLanguageChange = (event) => {
     const selectedlanguage=event.target.value;
-    setLanguage(event.target.value);
+    setLanguage(selectedlanguage);
 
     // const newcodelang=getDefaultValue(selectedlanguage)
     // setCodelang(newcodelang)

@@ -21,6 +21,11 @@ const ProblemSchema = new mongoose.Schema(
       enum: ['Easy', 'Medium', 'Hard'],
       required: true,
     },
+
+    boilerplateCode: {
+      type: String,
+      required: true, // Stores the boilerplate code for the problem
+    },
     date_created: {
       type: Date,
       default: Date.now, 

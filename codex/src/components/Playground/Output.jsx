@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import { executeCode } from '@/lib/api';
 import { usecode } from './CodeContext';
-
+// import Testcase from '../Testcase';
+import axios from 'axios';
 // function Output({language,codeRef}) {
   function Output({problemId}) {
     const {language,codeRef}=usecode();
@@ -20,15 +21,39 @@ import { usecode } from './CodeContext';
             console.log(response)
             const testCases = response.data.testCases;
       
-            const results = await Promise.all(testCases.map(async (testCase) => {
-              const result = await executeCode(language, sourceCode, problemId);
-              return {
-                passed: result.run.output.trim() === testCase.output.trim(),
-                input: testCase.input,
-                expectedOutput: testCase.output,
-                actualOutput: result.run.output.trim(),
-              };
-            }));
+            const results=[];
+
+            // const results = await Promise.all(testCases.map(async (testCase) => {
+            //   const {input,output:expectedOutput}=testCase
+            //   const result = await executeCode(language, sourcecode, input);
+            //   const passed=result.run.output.trim()===testCase.output.trim();
+              
+            //   return {
+                
+            //     input: testCase.input,
+            //     expectedOutput: testCase.output,
+            //     actualOutput: result.run.output.trim(),
+            //     passed,
+            //   };
+            // }));
+
+            for (let i = 0; i < testCases.length; i++) {
+              const testCase = testCases[i];
+              const { input, output: expectedOutput } = testCase;
+  
+              // Wait 200ms before sending the next request
+              await new Promise(resolve => setTimeout(resolve, 200));  // delay of 200ms
+  
+              const result = await executeCode(language, sourcecode, input);
+              const passed = result.run.output.trim() === expectedOutput.trim();
+              
+              results.push({
+                  input: testCase.input,
+                  expectedOutput: testCase.output,
+                  actualOutput: result.run.output.trim(),
+                  passed,
+              });
+          }
             setTestResults(results)
         } catch (error) {
             console.log(error)
