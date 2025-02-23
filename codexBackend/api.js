@@ -32,6 +32,9 @@ app.use(cookieparser())
 const AuthRouter=require("./router/AuthRouter")
 app.use("/api/auth",AuthRouter)
 
+const ProblemRouter=require("./router/ProblemRouter")
+app.use("/api/problem",ProblemRouter)
+
 app.listen(3010,function(){
     console.log("server listening")
 })
