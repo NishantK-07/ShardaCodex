@@ -8,10 +8,16 @@ function ProblemPanel() {
   const problemId = '67badbd6bfb9789a740c30a6';
   return (
 
-        <div className='h-screen'>
+        <div className="h-screen bg-gr bg-gray-100 pt-12 px-4 pb-4">
             <Split className="split-panel h-full" sizes={[45,55]} minSize={60}>
-              <ProblemDesc problemId={problemId}/>
-              <Playground problemId={problemId}/>
+              <div className=" bg-white shadow-md rounded-lg ">
+                <ProblemDesc problemId={problemId}/>
+
+              </div>
+              <div className="">
+                <Playground problemId={problemId}/>
+
+              </div>
             </Split>
         </div>
         

@@ -3,7 +3,6 @@ import React from "react";
 import { useState,useRef,useEffect } from "react";
 import MonacoEditor from '@monaco-editor/react'
 import { Codesnippet } from "../Playground/CodeSnippet";
-import Output from "../Playground/Output";
 import { usecode } from "./CodeContext";
 
 
@@ -18,19 +17,9 @@ function Codeeditor({problemId}) {
     editor.focus();
     setEditor(editor);
   };
-  // const handleSave = () => {
-  //   if (editor) {
-  //     const code = editor.getValue();
-  //     console.log('Saved code:', code);
-  //   }
-  // };
-  // to change language
   const handleLanguageChange = (event) => {
     const selectedlanguage=event.target.value;
     setLanguage(selectedlanguage);
-
-    // const newcodelang=getDefaultValue(selectedlanguage)
-    // setCodelang(newcodelang)
     setCodelang(Codesnippet[selectedlanguage])
   };
 
@@ -40,10 +29,12 @@ function Codeeditor({problemId}) {
     <>
     {/* <div className=" flex "> */}
       
-      <div style={{ height: '100vh', display: 'flex', flexDirection: 'column',minHeight: '200px'  }} >
+      <div style={{ height: '100%', display: 'flex', flexDirection: 'column',minHeight: '200px'  }} >
 
+      <div className="bg-white">
           {/* Language selection dropdown */}
-          <select className="bg-gray-600 text-white" value={language} onChange={handleLanguageChange}>
+          <select className="bg-white text-black text-sm p-2 rounded-md border  focus:outline-none w-32"
+           value={language} onChange={handleLanguageChange}>
           <option value="javascript">JavaScript</option>
           <option value="python">Python</option>
           <option value="java">Java</option>
@@ -52,21 +43,21 @@ function Codeeditor({problemId}) {
           <option value="css">CSS</option>
           {/* You can add more languages here */}
           </select>
+      </div>
+          
 
-          <MonacoEditor height="100%"
+          <MonacoEditor height="100vh"
             // defaultLanguage="javascript"
             language={language}
             // defaultValue=" //write your code here in "
             // defaultValue={getDefaultValue(language)} 
             value={codelang}
             onMount={handleEditorMount}
-            theme="vs-dark"
+            theme="vs-light"
           />
         
       </div>
-      <Output problemId={problemId}/>
-      {/* <Output language={language} codeRef={codeRef}></Output> */}
-    {/* </div> */}
+   
     </>
     
   )

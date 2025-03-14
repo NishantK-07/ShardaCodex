@@ -6,12 +6,12 @@ import { CodeProvider } from './CodeContext'
 function Playground({problemId}) {
   return (
     <CodeProvider>
-      <div className='flex flex-col bg-dark'>
-        <Split  className="h-[calc(100vh-94px)]" sizes={[60,40]} minSize={60}  direction="vertical">
-            <div className='w-full overflow-auto'>
+      <div className='flex flex-col bg-dark h-full'>
+        <Split  className="h-[calc(100vh-94px)]" sizes={[75,25]} minSize={60}  direction="vertical">
+            <div className='w-full overflow-auto rounded-lg' >
                 <Codeeditor problemId={problemId}/>
             </div>
-            <div>
+            <div className='rounded-lg'>
                 <Output problemId={problemId}/>
             </div>
         </Split>

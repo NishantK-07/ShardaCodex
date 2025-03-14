@@ -14,9 +14,6 @@ import axios from 'axios';
             return;
         }
         try {
-            // const {run:result}=await executeCode(language,sourcecode,problemId)
-            // setoutput(result.output)
-
             const response = await axios.get(`http://localhost:3010/api/problem/${problemId}`);
             console.log(response)
             const testCases = response.data.testCases;
@@ -24,18 +21,7 @@ import axios from 'axios';
             const results=[];
 
             // const results = await Promise.all(testCases.map(async (testCase) => {
-            //   const {input,output:expectedOutput}=testCase
-            //   const result = await executeCode(language, sourcecode, input);
-            //   const passed=result.run.output.trim()===testCase.output.trim();
-              
-            //   return {
-                
-            //     input: testCase.input,
-            //     expectedOutput: testCase.output,
-            //     actualOutput: result.run.output.trim(),
-            //     passed,
-            //   };
-            // }));
+
 
             for (let i = 0; i < testCases.length; i++) {
               const testCase = testCases[i];
@@ -61,7 +47,7 @@ import axios from 'axios';
     }
   return (
     <>
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }} className=" ml-4  outline-4 outline-black bg-white">
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }} className="   outline-4 outline-black bg-white">
         <button  className=" bg-gray-600 text-white" 
         onClick={runCode}
         >Run Code</button>
