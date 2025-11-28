@@ -7,7 +7,7 @@ const cors = require('cors');
 const corsConfig = {
     origin: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE','PATCH'], // Allowed methods
-    allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
+    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'], // Allowed headers
     credentials: true,
   };
   app.use(cors(corsConfig));
@@ -34,6 +34,11 @@ app.use("/api/auth",AuthRouter)
 
 const ProblemRouter=require("./router/ProblemRouter")
 app.use("/api/problem",ProblemRouter)
+
+const CodeDraftRouter = require('./router/CodeDraftRouter');
+const SubmissionRouter = require('./router/SubmissionRouter');
+app.use('/api/code-drafts', CodeDraftRouter); // NEW
+app.use('/api/submissions', SubmissionRouter); // NEW
 
 app.listen(3010,function(){
     console.log("server listening")

@@ -1,4 +1,69 @@
 const Problem = require('../models/ProblemModel');
+const UserProblemStatus = require('../models/Userproblemstatus');
+
+// Get all problems with user status
+async function getAllProblemsWithStatus(req, res) {
+  const userId = req.user?._id; // Optional: works for both logged in and guest users
+
+  try {
+    const problems = await Problem.find().select('-hiddenTestCases'); // Don't send hidden test cases
+
+    if (!userId) {
+      // Guest user - return problems without status
+      return res.status(200).json(problems.map(p => ({
+        ...p.toObject(),
+        status: 'not_attempted',
+        acceptanceRate: p.acceptanceRate,
+      })));
+    }
+
+    // Get user's problem statuses
+    const userStatuses = await UserProblemStatus.find({ userId });
+    const statusMap = new Map(
+      userStatuses.map(s => [s.problemId.toString(), s.status])
+    );
+
+    // Merge problems with user status
+    const problemsWithStatus = problems.map(problem => ({
+      ...problem.toObject(),
+      status: statusMap.get(problem._id.toString()) || 'not_attempted',
+      acceptanceRate: problem.acceptanceRate,
+    }));
+
+    res.status(200).json(problemsWithStatus);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching problems' });
+  }
+}
+
+// Update getProblemById to include user status
+async function getProblemByIdWithStatus(req, res) {
+  const { id } = req.params;
+  const userId = req.user?._id;
+
+  try {
+    const problem = await Problem.findById(id).select('-hiddenTestCases');
+    if (!problem) {
+      return res.status(404).json({ message: 'Problem not found' });
+    }
+
+    let userStatus = null;
+    if (userId) {
+      userStatus = await UserProblemStatus.findOne({ userId, problemId: id });
+    }
+
+    res.status(200).json({
+      ...problem.toObject(),
+      status: userStatus?.status || 'not_attempted',
+      attempts: userStatus?.attempts || 0,
+      acceptanceRate: problem.acceptanceRate,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching problem' });
+  }
+}
 
 // Controller to get all problems
 async function getAllProblems(req, res){
@@ -28,7 +93,7 @@ async function getProblemById(req, res){
 
 // Controller to create a new problem
 async function createProblem(req, res){
-    const { title, description, constraints, difficulty, testCases } = req.body;
+    const { title, description, constraints, difficulty, testCases ,boilerplateCode } = req.body;
     
     // Validate that difficulty is one of the predefined values
     if (!['Easy', 'Medium', 'Hard'].includes(difficulty)) {
@@ -42,6 +107,7 @@ async function createProblem(req, res){
             constraints,
             difficulty,
             testCases,
+            boilerplateCode 
             });
           
         res.status(201).json({
@@ -99,4 +165,5 @@ async function deleteProblem(req, res){
   }
 };
 
-module.exports = { getAllProblems, getProblemById, createProblem, updateProblem, deleteProblem };
+module.exports = { getAllProblems, getProblemById, createProblem, updateProblem, deleteProblem ,getAllProblemsWithStatus,  // NEW
+  getProblemByIdWithStatus};

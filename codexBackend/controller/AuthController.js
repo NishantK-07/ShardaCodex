@@ -36,7 +36,12 @@ async function signuphandler(req,res) {
         })
         res.status(201).json({
             message:"user signedup sucessfully",
-            user:newuser,
+            user:{
+        _id: newuser._id,
+        name: newuser.name,
+        email: newuser.email,
+        role: newuser.role // add role here
+    },
             status:"success"
         })
     } catch (error) {
@@ -89,53 +94,77 @@ async function loginhandler(req,res){
         })
     }
 }
-
-async function protecdrouteMiddleware(req,res,next) {
+async function protecdrouteMiddleware(req, res, next) {
     try {
-        const authtoken=req.cookies;
-        console.log(authtoken)
-        const token=authtoken.jwt;
-        console.log("tera token",token)
-        if(!token){
-            return res.status(404).json({
-                message:"unauthorised access of token",
-                status:"failure"
-            })
+        const token = req.cookies?.jwt;
+
+        if (!token) {
+            return res.status(401).json({
+                message: "Unauthorized: No token provided",
+                status: "failure"
+            });
         }
-      
-        const decrypttoken=await promisedjwtverify(token,process.env.SECRET_KEY);
-        req.userId=decrypttoken.id;
+
+        const decrypttoken = await promisedjwtverify(token, process.env.SECRET_KEY);
+
+        req.userId = decrypttoken.id;
+
         next();
+
     } catch (error) {
-        res.status(500).json({
-            message: error.message,
-            status:"failure in catch protected route"
-        })
-    }
-}
-async function profilehandler(req,res) {
-    try {
-        const userid=res.id;
-        const user= await UserModel.findOne(userid);
-        if(!user){
-            return res.status(404).json({
-                message:"user not found",
-                status:"failure"
-            })
-        }
-        res.json({
-            message:"profile worked",
-            status:"success",
-            user:user
-        })
-    } catch (error) {
-        res.status(500).json({
-            message: error.message,
-            status:"failure"
-        })
+        return res.status(401).json({
+            message: "Invalid or expired token",
+            status: "failure"
+        });
     }
 }
 
+// async function profilehandler(req,res) {
+//     try {
+//         const userid=req.userId;
+//         const user= await UserModel.findById(userid);
+//         if(!user){
+//             return res.status(404).json({
+//                 message:"user not found",
+//                 status:"failure"
+//             })
+//         }
+//         res.json({
+//             message:"profile worked",
+//             status:"success",
+//             user:user
+//         })
+//     } catch (error) {
+//         res.status(500).json({
+//             message: error.message,
+//             status:"failure"
+//         })
+//     }
+// }
+async function profilehandler(req, res) {
+    try {
+        const userid = req.userId;
+        const user = await UserModel.findById(userid).select("-password"); // exclude password
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found",
+                status: "failure"
+            });
+        }
+
+        res.json({
+            message: "Profile fetched successfully",
+            status: "success",
+            user: user
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: error.message,
+            status: "failure"
+        });
+    }
+}
 async function logouthandler(req,res) {
     try {
         res.clearCookie('jwt',{path:"/"});

@@ -1,16 +1,14 @@
 "use client";
 
-import ProblemPanel from "@/components/Playground/ProblemPanel";
 import React, { useState } from "react";
 
-
+import Homedefault from "./home/page";
 export default function Home() {
   
 
   return (
    <>
-   <ProblemPanel/>
-   
+   <Homedefault/>
    </>
   );
 }

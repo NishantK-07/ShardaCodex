@@ -1,103 +1,219 @@
-"use client"
-import React, { useState } from "react";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-  } from "@/components/ui/card";
-  import { Button } from "@/components/ui/button";
-  import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import Link from "next/link"
-import axios from "axios";
-import { useRouter } from "next/navigation";
-import { CheckCircle2, Eye, EyeOff, LogOut } from "lucide-react"
-function login() {
-  const router = useRouter();
-  const [email, setemail] = useState("");
-  const [password, setpassword] = useState("");
-  const [showPassword,setshowPassword]=useState("")
-  const[loading,setLoading]=useState(false)
+// "use client";
 
-  const onSubmit = async () => {
+// import { Button } from "@/components/ui/button";
+// import {
+//   Card,
+//   CardContent,
+//   CardDescription,
+//   CardHeader,
+//   CardTitle,
+// } from "@/components/ui/card";
+// import Link from "next/link";
+// import { Input } from "@/components/ui/input";
+// import { Label } from "@/components/ui/label";
+// import { useState } from "react";
+// import { useRouter } from "next/navigation";
+// import axios from "axios";
+// import { Loader2 } from "lucide-react";
+// import { useDispatch } from "react-redux";
+
+// // ✅ FIXED: correct import
+// import { setUser } from "@/store/slices/authSlice";
+
+// export default function Login() {
+//   const router = useRouter();
+//   const dispatch = useDispatch();
+
+//   const [email, setEmail] = useState("");
+//   const [password, setPassword] = useState("");
+//   const [loading, setLoading] = useState(false);
+//   const [errorMsg, setErrorMsg] = useState("");
+
+//   const onSubmit = async (e) => {
+//     e.preventDefault();
+//     setLoading(true);
+//     setErrorMsg("");
+
+//     try {
+//       const res = await axios.post(
+//         "http://localhost:3010/api/auth/login",
+//         { email, password },
+//         { withCredentials: true }
+//       );
+
+//       if (res.data.status === "success") {
+//         // Save the user in redux
+//         dispatch(setUser(res.data.user));
+//         router.push("/dashboard");
+//       }
+//     } catch (err) {
+//       setErrorMsg(err.response?.data?.message || "Login failed");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   return (
+//     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-100 via-white to-indigo-100 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900 p-4">
+//       <Card className="w-full max-w-md bg-white/70 dark:bg-gray-900/70 border shadow-xl rounded-2xl p-6">
+//         <CardHeader className="text-center space-y-2">
+//           <CardTitle className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-sky-500 bg-clip-text text-transparent">
+//             Welcome Back
+//           </CardTitle>
+//           <CardDescription>
+//             Login to continue learning on CODEX
+//           </CardDescription>
+//         </CardHeader>
+
+//         <CardContent>
+//           <form onSubmit={onSubmit} className="space-y-4">
+//             {errorMsg && <p className="text-red-500 text-sm">{errorMsg}</p>}
+
+//             <div>
+//               <Label>Email</Label>
+//               <Input
+//                 type="email"
+//                 placeholder="you@example.com"
+//                 value={email}
+//                 onChange={(e) => setEmail(e.target.value)}
+//                 required
+//               />
+//             </div>
+
+//             <div>
+//               <Label>Password</Label>
+//               <Input
+//                 type="password"
+//                 placeholder="•••••••"
+//                 value={password}
+//                 onChange={(e) => setPassword(e.target.value)}
+//                 required
+//               />
+//             </div>
+
+//             <Button type="submit" disabled={loading} className="w-full">
+//               {loading ? (
+//                 <>
+//                   <Loader2 className="w-5 h-5 animate-spin mr-2" /> Signing in...
+//                 </>
+//               ) : (
+//                 "Sign In"
+//               )}
+//             </Button>
+//           </form>
+
+//           <div className="mt-6 text-center text-sm">
+//             Don’t have an account? <Link href="/signup" className="text-indigo-600">Sign up</Link>
+//           </div>
+//         </CardContent>
+//       </Card>
+//     </div>
+//   );
+// }
+
+"use client";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import { Loader2 } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { setUser, fetchMe } from "@/store/slices/authSlice";
+
+export default function Login() {
+  const router = useRouter();
+  const dispatch = useDispatch();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
     setLoading(true);
+    setErrorMsg("");
+
     try {
-      if (email.length === 0 || password.length === 0) {
-        // toast({ title: "Please fill all fields" });
-        // toast("Please fill all fields");
-        console.log("Please fill all fields")
-      }
-      const res = await axios.post(`http://localhost:3010/api/auth/login`, {
-        email: email,
-        password: password,
-      },{withCredentials:true});
+      const res = await axios.post(
+        "http://localhost:3010/api/auth/login",
+        { email, password },
+        { withCredentials: true }
+      );
+
       if (res.data.status === "success") {
-        // dispatch(userLoggedInDetails(res.data));
-        // setTimeout(() => {
-          router.push("/"); // Redirect after showing the toast
-        // }, 1500);
+          const actionResult = await dispatch(fetchMe());
+          const user = actionResult.payload; // full user info
+
+          if (!user) {
+            setErrorMsg("Failed to get user info after login");
+            return;
+          }
+
+          // Redirect based on role
+          if (user.role === "Teacher") router.push("/teacher/dashboard");
+          else if (user.role === "Admin") router.push("/admin/dashboard");
+          else router.push("/dashboard");
       }
     } catch (err) {
-      console.log("err: ", err);
-      // toast.error("Invalid credentials");
-      // toast({ title: "Invalid credentials", variant: 'destructive' });
-      console.log("Invalid credentials")
+      console.log(err)
+      setErrorMsg(err.response?.data?.message || "Login failed");
     } finally {
       setLoading(false);
     }
-
   };
 
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-    <Card className="w-full max-w-md">
-
-        <CardHeader className="space-y-6">
-          <div className="flex justify-center">
-            <div className="text-2xl font-bold">ShardaCodex</div>
-          </div>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-100 via-white to-indigo-100 p-4">
+      <Card className="w-full max-w-md bg-white/70 border shadow-xl rounded-2xl p-6">
+        <CardHeader className="text-center space-y-2">
+          <CardTitle className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-sky-500 bg-clip-text text-transparent">
+            Welcome Back
+          </CardTitle>
+          <CardDescription>Login to continue learning on CODEX</CardDescription>
         </CardHeader>
 
-        <CardContent className="space-y-4">
-          <div className="space-y-4">
-          <Label htmlFor="email">Email</Label>
-            <Input type="email" name="email" placeholder="jhon@gmail.com" value={email} onChange={(e)=>setemail(e.target.value)} className="bg-[#f8f9fa]"/>
+        <CardContent>
+          <form onSubmit={onSubmit} className="space-y-4">
+            {errorMsg && <p className="text-red-500 text-sm">{errorMsg}</p>}
 
-            <div className="relative">
-            <Label htmlFor="password">Password</Label>
-              <Input type= "password" name="password" placeholder="Password" value={password} onChange={(e)=>setpassword(e.target.value)}className="bg-[#f8f9fa] pr-10"/>
-              <button type="button"
-                // onClick={togglePasswordVisibility}
-                className="absolute  mt-3 right-3 top-1/2 -translate-y-1/2 "
-              >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </button>
+            <div>
+              <Label>Email</Label>
+              <Input
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
             </div>
-          </div>
 
-          <Button type="submit" onClick={onSubmit} className="w-full   text-white">
-            Sign In
-          </Button>
+            <div>
+              <Label>Password</Label>
+              <Input
+                type="password"
+                placeholder="•••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+
+            <Button type="submit" disabled={loading} className="w-full">
+              {loading ? <><Loader2 className="w-5 h-5 animate-spin mr-2" /> Signing in...</> : "Sign In"}
+            </Button>
+          </form>
+
+          <div className="mt-6 text-center text-sm">
+            Don’t have an account? <Link href="/signup" className="text-indigo-600">Sign up</Link>
+          </div>
         </CardContent>
-
-        <CardFooter className="flex flex-col space-y-4">
-          <div className="flex justify-between w-full text-sm">
-            <Link href="/forgetpassword" className="text-gray-600 hover:text-gray-800 transition-colors">
-              Forgot Password?
-            </Link>
-            <Link href="/signup" className="text-gray-600 hover:text-gray-800 transition-colors">
-              Sign Up
-            </Link>
-          </div>
-        </CardFooter>
-
-    </Card>
-  </div>
+      </Card>
+    </div>
   );
-};
-
-export default login;
+}

@@ -13,6 +13,6 @@ AuthRouter.post("/signup",signuphandler);
 AuthRouter.use(protecdrouteMiddleware)
 
 AuthRouter.get("/profile",profilehandler)
-AuthRouter.get("/logout",logouthandler)
+AuthRouter.post("/logout",logouthandler)
 
 module.exports= AuthRouter
